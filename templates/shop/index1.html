@@ -31,6 +31,7 @@
 
         }
     </style>
+    
 </head>
 <main-body><br><br><br><br>
     <div id="notification" class="alert alert-primary" role="alert"></div><br>
@@ -249,31 +250,286 @@
 
 
 
-{% comment %} select payment method  {% endcomment %}
-        <script>
-            
-            //pyment method selected
-                function validatePaymentMethod() {
-                    const paymentMethods = document.getElementsByName('payment_method');
-                    let isSelected = false;
 
-                    for (const method of paymentMethods) {
-                        if (method.checked) {
-                            isSelected = true;
-                            break;
-                        }
+
+
+
+
+{% comment %} print the bill  {% endcomment %}<script>
+    function printCartItems() {
+        let items = document.querySelectorAll('#items li');
+        let totalPriceText = document.getElementById('totalPrice').innerText;
+
+        // Open a new window for printing the receipt
+        let printWindow = window.open('', 'Print Order', 'width=80mm,height=auto');
+        printWindow.document.write('<html><head><title>RECEIPT OF ROYAL SHETKARI</title>');
+        
+        // Style for the receipt
+        printWindow.document.write(`
+            <style>
+                @media print {
+                    body {
+                        width: 95%; 
+                        font-family: 'Courier New', monospace;
+                        padding: 10px;
+                        margin: 0;
+                        border: 2px dotted black;
+                        line-height: 1.2;
                     }
+                    h3, h4, h5 {
+                        text-align: center;
+                        margin: 5px 0;
+                    }
+                    h4 {
+                        border-bottom: 1px solid black;
+                        width: 99%;
+                        margin-bottom: 10px;
+                    }
+                    .cart-item {
+                        border-bottom: 1px dashed black;
+                        padding-bottom: 5px;
+                        margin-bottom: 5px;
+                    }
+                    .total {
+                        font-weight: bold;
+                        text-align: right;
+                        padding: 5px 0;
+                    }
+                    .footer-text {
+                    font-family: 'Courier New', monospace;
+                        text-align: center;
+                        margin-top: 10px;
+                        border-top: 1px solid black;
+                        padding-top: 5px;
+                        position: fixed;
+                        bottom: 10px; /* Ensure footer is at the bottom */
+                        width: 100%;
+                        left: 0;
+                        right: 0;
+                    }
+                    
+                }
+            </style>
+        `);
 
-                    const alertDiv = document.getElementById('payment-alert');
-                    if (!isSelected) {
-                        alertDiv.style.display = 'block'; // Show alert if no payment method is selected
-                        return false; // Prevent form submission
-                    } else {
-                        alertDiv.style.display = 'none'; // Hide alert if a payment method is selected
-                        return true; // Allow form submission
+        printWindow.document.write('</head><body>');
+
+        // Add company details
+        printWindow.document.write('<h3>रॉयल शेतकरी</h3>');
+        printWindow.document.write('<h5>प्रोप्रा. अभिजीत कोळवले</h5>');
+        printWindow.document.write('<h5>मो. ९३७०७०२५८६</h5>');
+        printWindow.document.write('<h5>तेजस अ‍ॅग्रो शेजारी, पंढरपूर-पुणे हायवे, भंडीशेगाव, ता. पंढरपूर, जि. सोलापूर</h5>');
+
+        printWindow.document.write('<hr>');
+
+        // Section for cart items
+        printWindow.document.write('<h4>Your Cart Items</h4>');
+
+        let subtotal = 0;
+        let totalQuantity = 0;
+
+        // Start content section
+        printWindow.document.write('<div class="content">');
+
+        // First loop: Print items once
+        items.forEach((item, index) => {
+            let itemName = item.querySelector('.item-name') ? item.querySelector('.item-name').innerText : 'Unknown';
+            let itemQty = item.querySelector('.qty-input') ? parseInt(item.querySelector('.qty-input').value) : 0;
+            let itemPrice = item.querySelector('.original-item-price') ? parseFloat(item.querySelector('.original-item-price').innerText.replace('Rs. ', '').trim()) : 0;
+
+            if (itemName !== 'Unknown' && itemQty > 0) {
+                let itemTotal = itemQty * itemPrice;
+                subtotal += itemTotal;
+                totalQuantity += itemQty;
+
+                // Print each cart item with its index
+                printWindow.document.write(`
+                    <div class="cart-item">
+                        <li>${index + 1}. ${itemName} x ${itemQty} @ Rs. ${itemPrice.toFixed(2)} 
+                        <span class="amount"> = Rs. ${itemTotal.toFixed(2)}</span></li>
+                    </div>
+                `);
+            }
+        });
+
+        // Total quantity and final price
+        printWindow.document.write(`
+            <p>Total Quantity: ${totalQuantity}</p>
+            <p class="total">Total Price (with tax): Rs. ${totalPriceText}</p>
+        `);
+
+        printWindow.document.write('</div>'); // End content section
+
+        // Footer message
+        printWindow.document.write('<div class="footer-text">Visit Again! This software was developed by Prasad Yalmar.</div>');
+
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+    }
+
+    document.getElementById('printCartItems').addEventListener('click', printCartItems);
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} select payment method  {% endcomment %}
+<script>
+    function printCartItems() {
+        let items = document.querySelectorAll('#items li');
+        let totalPriceText = document.getElementById('totalPrice').innerText;
+
+        let printWindow = window.open('', 'Print Order', 'width=600,height=400');
+        printWindow.document.write('<html><head><title>RECEIPT OF ROYAL SHETKARI</title>');
+        
+        // Style for the receipt including custom footer and other styling
+        printWindow.document.write(`
+            <style>
+                @media print {
+                    body {
+                        width: 140mm;
+                        line-height: 1.2; /* Minimize gap between lines */
+                        font-family: 'Courier New', monospace;
+                        border: 2px dotted black; /* Dotted border for paper */
+                        padding: 10px; /* Padding around the receipt */
+                        margin: 0; /* Remove default margin */
+                        height: auto; /* Ensure the height is minimized to fit content */
+                    }
+                    .logo-section {
+                        text-align: center;
+                        margin-bottom: 5px;
+                    }
+                    h3, h4, h5 {
+                        margin: 2px 0; /* Minimize gap above and below headings */
+                        text-align: center;
+                    }
+                    h4 {
+                        margin-top: 8px;
+                    }
+                    .cart-item {
+                        border-top: 1px solid black; /* Top border for the first product */
+                        border-bottom: 1px solid black; /* Border for each product */
+                        padding-bottom: 5px;
+                        margin-bottom: 5px;
+                    }
+                    .total {
+                        background-color: orange; /* Orange background for final total */
+                        color: white;
+                        padding: 5px;
+                        font-weight: bold;
+                    }
+                    .amount {
+                        color: green; /* Green color for product totals */
+                    }
+                    .footer-text {
+                        text-align: center;
+                        margin-top: 5px;
+                        border: 2px solid black; 
+                        padding: 5px;
+                        border-radius: 25%;
+                        display: inline-block; 
+                        width: fit-content; 
+                        margin-bottom: -10px; 
                     }
                 }
-        </script>
+            </style>
+        `);
+        
+        printWindow.document.write('</head><body>');
+        
+        // Add logo and company name, centered
+        printWindow.document.write('<div class="logo-section"><img src="https://www.yourcompany.com/logo.png" alt="Logo"></div>');
+        printWindow.document.write('<h3>रॉयल शेतकरी</h3>');
+        printWindow.document.write('<h5>प्रोप्रा. अभिजीत कोळवले</h5>');
+        printWindow.document.write('<h5>मो. ९३७०७०२५८६</h5>');
+        printWindow.document.write('<h5>तेजस अ‍ॅग्रो शेजारी, पंढरपूर-पुणे हायवे, भंडीशेगाव, ता. पंढरपूर, जि. सोलापूर </h5>');
+
+        printWindow.document.write('<h4>Your Cart Items</h4>');
+
+        let subtotal = 0;
+        let totalQuantity = 0;
+
+        // Add the product items with borders
+        items.forEach((item, index) => {
+            let itemName = item.querySelector('.item-name') ? item.querySelector('.item-name').innerText : 'Unknown';
+            let itemQty = item.querySelector('.qty-input') ? parseInt(item.querySelector('.qty-input').value) : 0;
+            let itemPrice = item.querySelector('.original-item-price') ? parseFloat(item.querySelector('.original-item-price').innerText.replace('Rs. ', '').trim()) : 0;
+
+            if (itemName !== 'Unknown' && itemQty > 0) {
+                let itemTotal = itemQty * itemPrice;
+                subtotal += itemTotal;
+                totalQuantity += itemQty;
+
+                // Print each cart item with both Marathi and English separated
+                let productNames = itemName.split('/');
+                let marathiName = productNames[0] ? productNames[0].trim() : '';
+                let englishName = productNames[1] ? productNames[1].trim() : '';
+
+                printWindow.document.write(`
+                    <div class="cart-item">
+                        <li>${index + 1}. ${index + 1}: ${marathiName} / ${englishName} x ${itemQty} @ Rs. ${itemPrice.toFixed(2)} 
+                        <span class="amount"> = Rs. ${itemTotal.toFixed(2)}</span></li>
+                    </div>
+                `);
+            }
+        });
+
+        printWindow.document.write('<hr>');
+        
+        // Total quantity and final price with customized background and colors
+        printWindow.document.write(`
+            <p>Total Quantity: ${totalQuantity}</p>
+            <p class="total">Total Price (with tax): Rs. ${totalPriceText}</p>
+        `);
+
+        printWindow.document.write('<p>Thank you for shopping with us!</p>');
+
+        // Footer message with custom border and rounded design
+        printWindow.document.write('<div class="footer-text">Visit Again! This software was developed by Prasad Yalmar.</div>');
+
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+    }
+
+    document.getElementById('printCartItems').addEventListener('click', printCartItems);
+
+    // Payment method validation
+    function validatePaymentMethod() {
+        const paymentMethods = document.getElementsByName('payment_method');
+        let isSelected = false;
+
+        for (const method of paymentMethods) {
+            if (method.checked) {
+                isSelected = true;
+                break;
+            }
+        }
+
+        const alertDiv = document.getElementById('payment-alert');
+        if (!isSelected) {
+            alertDiv.style.display = 'block'; // Show alert if no payment method is selected
+            return false; // Prevent form submission
+        } else {
+            alertDiv.style.display = 'none'; // Hide alert if a payment method is selected
+            return true; // Allow form submission
+        }
+    }
+</script>
+
 
        
 
@@ -345,126 +601,6 @@ paymentRadios.forEach(radio => {
 </script>
 
 
-
-
-<script>
-    // Function to print the cart items
-    function printCartItems() {
-        let items = document.querySelectorAll('#items li');
-        let totalPriceText = document.getElementById('totalPrice').innerText;
-
-        let printWindow = window.open('', 'Print Order', 'width=600,height=400');
-        printWindow.document.write('<html><head><title>ROYAL SHETKARI</title>');
-        printWindow.document.write('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">');
-        printWindow.document.write('<style>@media print { @page { size: auto; margin: 10mm; } .no-print { display: none; } }</style>');
-        printWindow.document.write('</head><body>');
-
-        printWindow.document.write('<div class="container">');
-        printWindow.document.write('<h3>Your Cart Items</h3>');
-
-        let subtotal = 0;
-        let totalQuantity = 0;
-        let itemCount = 0;
-
-        printWindow.document.write('<ul class="list-group">');
-        items.forEach((item) => {
-            let itemName = item.querySelector('.item-name') ? item.querySelector('.item-name').innerText : 'Unknown';
-            let itemQty = item.querySelector('.qty-input') ? parseInt(item.querySelector('.qty-input').value) : 0;
-            let itemPrice = item.querySelector('.original-item-price') ? parseFloat(item.querySelector('.original-item-price').innerText.replace('Rs. ', '').trim()) : 0;
-
-            if (itemName === 'Unknown' || itemQty === 0) return;
-
-            itemCount++;
-            let itemTotal = itemQty * itemPrice;
-
-            printWindow.document.write('<li class="list-group-item d-flex justify-content-between align-items-center">' +
-                itemCount + ': ' + itemName +
-                '<span>(Qty: ' + itemQty +
-                ', Unit Price: Rs. ' + itemPrice.toFixed(2) +
-                ', Total: Rs. ' + itemTotal.toFixed(2) + ')</span></li>');
-            
-            subtotal += itemTotal;
-            totalQuantity += itemQty;
-        });
-        printWindow.document.write('</ul>');
-
-        printWindow.document.write('<div class="d-flex justify-content-between align-items-center mt-3">');
-        printWindow.document.write('<strong>Total Quantity: ' + totalQuantity + '</strong>');
-        printWindow.document.write('</div>');
-        printWindow.document.write('<div class="d-flex justify-content-between align-items-center mt-3">');
-        printWindow.document.write('<strong>Total Price (with tax): Rs. ' + totalPriceText.replace('Rs. ', '').trim() + '</strong>');
-        printWindow.document.write('</div>');
-        printWindow.document.write('</div></body></html>');
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
-        printWindow.close();
-    }
-
-    // Function to print the receipt with order details
-    function printReceipt() {
-        let items = document.querySelectorAll('#items li');
-        let totalPriceText = document.getElementById('totalPrice').innerText;
-
-        let printWindow = window.open('', 'Print Receipt', 'width=600,height=400');
-        printWindow.document.write('<html><head><title>Receipt</title>');
-        printWindow.document.write('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">');
-        printWindow.document.write('<style>@media print { @page { size: auto; margin: 10mm; } .no-print { display: none; } }</style>');
-        printWindow.document.write('</head><body>');
-
-        printWindow.document.write('<div class="container">');
-        printWindow.document.write('<h3>Order Receipt</h3>');
-
-        let subtotal = 0;
-        let totalQuantity = 0;
-        let itemCount = 0;
-
-        printWindow.document.write('<ul class="list-group">');
-        items.forEach((item) => {
-            let itemName = item.querySelector('.item-name') ? item.querySelector('.item-name').innerText : 'Unknown';
-            let itemQty = item.querySelector('.qty-input') ? parseInt(item.querySelector('.qty-input').value) : 0;
-            let itemPrice = item.querySelector('.original-item-price') ? parseFloat(item.querySelector('.original-item-price').innerText.replace('Rs. ', '').trim()) : 0;
-
-            if (itemName === 'Unknown' || itemQty === 0) return;
-
-            itemCount++;
-            let itemTotal = itemQty * itemPrice;
-
-            printWindow.document.write('<li class="list-group-item d-flex justify-content-between align-items-center">' +
-                itemCount + ': ' + itemName +
-                '<span>(Qty: ' + itemQty +
-                ', Unit Price: Rs. ' + itemPrice.toFixed(2) +
-                ', Total: Rs. ' + itemTotal.toFixed(2) + ')</span></li>');
-            
-            subtotal += itemTotal;
-            totalQuantity += itemQty;
-        });
-        printWindow.document.write('</ul>');
-
-        printWindow.document.write('<div class="d-flex justify-content-between align-items-center mt-3">');
-        printWindow.document.write('<strong>Total Quantity: ' + totalQuantity + '</strong>');
-        printWindow.document.write('</div>');
-        printWindow.document.write('<div class="d-flex justify-content-between align-items-center mt-3">');
-        printWindow.document.write('<strong>Total Price (with tax): Rs. ' + totalPriceText.replace('Rs. ', '').trim() + '</strong>');
-        printWindow.document.write('</div>');
-
-        printWindow.document.write('</div></body></html>');
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
-        printWindow.close();
-    }
-
-    // Event listener for print cart items button
-    document.getElementById('printCartItems').addEventListener('click', printCartItems);
-
-    // Event listener for print receipt button
-    document.getElementById('printReceipt').addEventListener('click', printReceipt);
-
-    // Update Popover
-    $('#popcart').popover();
-    updatePopover(cart);
-</script>
 
 <script>
     // Get a unique identifier for each cart (based on the URL)

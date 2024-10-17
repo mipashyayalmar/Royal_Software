@@ -6,7 +6,14 @@ body {
 }
 .container {
     padding: 20px;
-}
+    height: 94.7%;}
+
+@media (min-width: 550px) {
+        .container {
+            padding: 20px;
+            height: 94.4%;}
+    }
+    
 .header {
     display: flex;
     justify-content: space-between;
@@ -108,7 +115,7 @@ body {
 }
 .table-view .table .info {
     text-align: center;
-    margin-top: -41px;
+    margin-top: -18px;
 }
 .table-view .table .info .time {
     font-size: 12px;

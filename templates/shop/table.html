@@ -1,7 +1,11 @@
+{% extends 'shop/basic.html' %}
+{% block title %} Table Royal_Shetkari {% endblock %}
+
 {% load static %}
+{%block body%}
 <html>
 <head>
-    <title>Table Royal_Shetkari</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="{% static 'template/table.css' %}">
     <style>
@@ -84,6 +88,13 @@
             padding: 0px 169px;
             justify-content: center;
         }
+        
+        @media (max-width: 550px) {
+            .table-view {
+                padding: 0px 9px;
+            }
+        }
+        
 
         .table.selected.error {
             background-color: red; /* Set red for error state */
@@ -151,7 +162,11 @@
                 {% endfor %}
             </div>
         </div>
-        
+    </div>
+
+        <div class="footer bg-primary text-light" style="width: 100%; position: relative; bottom: 0; left: 0;">
+            <p class="text-center py-2 mb-0">Copyright © 2024 Designed by <a href="" target="_blank" rel="noopener noreferrer" class="text-light">@Mipashya</a></p>
+          </div>
         <script>
             // Function to get the cart for a specific table
             function getCartForTable(tableNumber) {
@@ -249,3 +264,4 @@
 
 </body>
 </html>
+{%endblock%}
